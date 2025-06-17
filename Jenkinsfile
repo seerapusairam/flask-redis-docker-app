@@ -1,14 +1,6 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/seerapusairam/flask-redis-docker-app.git'
-                sh 'git status'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
@@ -16,7 +8,6 @@ pipeline {
                 }
             }
         }
-
         stage('Run Docker Container') {
             steps {
                 script {
