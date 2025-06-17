@@ -11,7 +11,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("flask-redis-app")
+                    def image = docker.build('flask-redis-app')
                 }
             }
         }
@@ -19,7 +19,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    dockerImage.run("-d -p 5000:5000")
+                    docker.image('flask-redis-app').run('-d -p 5000:5000')
                 }
             }
         }
