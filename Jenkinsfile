@@ -1,17 +1,6 @@
 pipeline {
     agent any
-
-    options {
-        skipDefaultCheckout(true) // disable automatic checkout
-    }
-
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build and Run with Docker Compose') {
             steps {
                 script {
