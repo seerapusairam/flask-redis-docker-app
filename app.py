@@ -28,6 +28,14 @@ def get_hits():
         count = 0
     return jsonify(hits=count)
 
+@app.route('/reset', methods=['POST'])
+def reset_hits():
+    try:
+        r.set('hits', 0)
+    except Exception as e:
+        app.logger.error(f"Error resetting hits in Redis: {e}")
+    return jsonify(hits=0)
+
 @app.route('/')
 def hello():
     try:
@@ -56,6 +64,7 @@ def hello():
                 background-color: #007BFF;
                 color: white;
                 border-radius: 5px;
+                margin: 5px;
             }
             button:hover {
                 background-color: #0056b3;
@@ -66,18 +75,20 @@ def hello():
         <div class="container">
             <h1>Visitor Hit Counter</h1>
             <div id="count">{{ count }}</div>
-            <button onclick="refreshHits()">Refresh Count</button>
+            <button onclick="resetHits()">Reset Count</button>
         </div>
 
         <script>
-            function refreshHits() {
-                fetch(window.location.origin + '/hits')
+            function resetHits() {
+                fetch(window.location.origin + '/reset', {
+                    method: 'POST'
+                })
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('count').textContent = data.hits;
                 })
                 .catch(error => {
-                    console.error('Error fetching hits:', error);
+                    console.error('Error resetting hits:', error);
                 });
             }
         </script>
