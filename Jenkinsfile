@@ -1,6 +1,17 @@
 pipeline {
     agent any
+        options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
+        stage('Checkout') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        
         stage('Build and Run with Docker Compose') {
             steps {
                 script {
