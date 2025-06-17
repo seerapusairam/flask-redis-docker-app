@@ -1,5 +1,10 @@
 pipeline {
     agent any
+
+    options {
+        skipDefaultCheckout(true) // <- disables automatic 'checkout scm'
+    }
+
     stages {
         stage('Build Docker Image') {
             steps {
@@ -8,6 +13,7 @@ pipeline {
                 }
             }
         }
+
         stage('Run Docker Container') {
             steps {
                 script {
