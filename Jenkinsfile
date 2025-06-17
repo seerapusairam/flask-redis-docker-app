@@ -6,18 +6,11 @@ pipeline {
     }
 
     stages {
-        stage('Build Docker Image') {
+        stage('Build and Run with Docker Compose') {
             steps {
                 script {
-                    def image = docker.build('flask-redis-app')
-                }
-            }
-        }
-
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    docker.image('flask-redis-app').run('-d -p 5001:5000')
+                    // Build and start services defined in docker-compose.yml
+                    sh 'docker-compose up --build -d'
                 }
             }
         }
