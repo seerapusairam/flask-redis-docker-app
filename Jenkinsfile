@@ -7,6 +7,7 @@ pipeline {
                 git 'https://github.com/seerapusairam/flask-redis-docker-app.git'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -14,7 +15,8 @@ pipeline {
                 }
             }
         }
-        stage('Run Container') {
+
+        stage('Run Docker Container') {
             steps {
                 script {
                     dockerImage.run("-d -p 5000:5000")
