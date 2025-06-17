@@ -71,7 +71,7 @@ def hello():
 
         <script>
             function refreshHits() {
-                fetch('/hits')
+                fetch(window.location.origin + '/hits')
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('count').textContent = data.hits;
