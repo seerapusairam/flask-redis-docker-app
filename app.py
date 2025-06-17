@@ -1,25 +1,43 @@
+import time
 import redis
 from flask import Flask, jsonify, render_template_string
 
 app = Flask(__name__)
-r = redis.Redis(host='redis', port=6379)  # connects to Redis container
 
-# Route to get hit count as JSON (for AJAX)
+# Retry connecting to Redis on startup
+r = None
+for i in range(10):
+    try:
+        r = redis.Redis(host='redis', port=6379)
+        r.ping()  # test connection
+        print("Connected to Redis")
+        break
+    except redis.exceptions.ConnectionError:
+        print(f"Redis connection failed, retrying {i+1}/10...")
+        time.sleep(1)
+else:
+    raise Exception("Could not connect to Redis after 10 attempts")
+
 @app.route('/hits')
 def get_hits():
-    count = r.get('hits')
-    count = int(count) if count else 0
+    try:
+        count = r.get('hits')
+        count = int(count) if count else 0
+    except Exception as e:
+        app.logger.error(f"Error fetching hits from Redis: {e}")
+        count = 0
     return jsonify(hits=count)
 
-# Main route serves HTML page
 @app.route('/')
 def hello():
-    # increment the hit count
-    r.incr('hits')
-    count = r.get('hits')
-    count = int(count) if count else 0
-    
-    # Simple HTML template with JavaScript
+    try:
+        r.incr('hits')
+        count = r.get('hits')
+        count = int(count) if count else 0
+    except Exception as e:
+        app.logger.error(f"Error incrementing hits in Redis: {e}")
+        count = 0
+
     html = """
     <!DOCTYPE html>
     <html>
@@ -50,7 +68,7 @@ def hello():
             <div id="count">{{ count }}</div>
             <button onclick="refreshHits()">Refresh Count</button>
         </div>
-        
+
         <script>
             function refreshHits() {
                 fetch('/hits')
@@ -69,4 +87,4 @@ def hello():
     return render_template_string(html, count=count)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
