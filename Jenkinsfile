@@ -3,7 +3,6 @@ pipeline {
         options {
         skipDefaultCheckout(true)
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -11,7 +10,6 @@ pipeline {
                 checkout scm
             }
         }
-        
         stage('Build and Run with Docker Compose') {
             steps {
                 script {
